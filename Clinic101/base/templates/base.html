@@ -1,0 +1,28 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic101</title>
+    {% tailwind_css %}
+    <!-- เพิ่มลิงก์ Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- ลิงก์ Google Font Fahkwang -->
+    <link href="https://fonts.googleapis.com/css2?family=Fahkwang:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="flex flex-col min-h-screen font-fahkwang bg-[#9bc0ff]">
+  {% include 'header.html' %}
+  <div class="flex flex-1 my-5 w-full">
+    <aside class="ml-3 flex-shrink-0 min-h-screen ">
+      {% include 'sidebar.html' %}
+    </aside>
+    <main class="flex flex-col flex-1 ml-3">
+      {% block main %}
+      <!-- เนื้อหาหลัก -->
+      {% endblock%}
+    </main>
+  </div>
+</body>
+</html>

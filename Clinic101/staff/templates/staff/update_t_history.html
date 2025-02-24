@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block main %}
+<div class="mr-3">
+  <div class=" bg-white p-8 rounded-2xl shadow-lg w-full">
+      <h3 class="text-xl  text-center mb-4 text-blue-800">การรักษา</h3>
+      <div class="flex justify-center items-center">
+      <form id="addForm" method="POST" >
+        {% csrf_token %}
+            <label for="user">ชื่อคนไข้</label><br>
+                <input type="text" id="userName" name="user" value="{{treatment_history.appointment.user.title}}{{treatment_history.appointment.user.first_name}} {{treatment_history.appointment.user.last_name}}" readonly class="input input-bordered w-full my-2" >
+                <input type="hidden" id="appointmentId" name="appointment"  value="{{treatment_history.appointment.id}}"  >
+
+                <label for="dentist">ชื่อทันตแพทย์</label><br>
+                <input type="text" id="dentist" name="dentist" value="{{treatment_history.appointment.dentist.dentistName}}"  readonly class="input input-bordered w-full my-2" >
+                    
+                <label for="treatment">ประเภทการรักษา</label><br>
+                <input type="text" id="treatment" name="treatment"  readonly value="{{treatment_history.appointment.treatment.treatmentName}}"  class="input input-bordered w-full  my-2" >
+
+                <label for="description">รายละเอียดการรักษา</label><br>
+                <textarea id="description" name="description"  required class="textarea textarea-bordered w-full max-w-lg h-32 my-2">{{treatment_history.description}}</textarea>
+                
+                <label for="cost">ค่าใช้จ่าย</label><br>
+                <input type="text" id="cost" name="cost" value="{{treatment_history.cost}}" required class="input input-bordered w-full  my-2" >
+
+                <div class="mt-4 flex justify-end">
+                  <button type="submit" class="btn bg-blue-500 text-white hover:bg-blue-400 mr-2">บันทึกข้อมูล</button>
+                  <a href="{% url 't-history-all' %}" type="button" class="btn btn-ghost " ">ยกเลิก</a>
+                </div>
+      </form>
+    </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,401 @@
+{% extends 'base.html' %}
+{% block main%}
+<div class="flex mr-3 mb-3 h-1/2">
+    <div class="bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">การนัดหมายรายเดือน</span>
+        </div>
+        <div class="p-4">
+            <canvas id="monthlyChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+    <div class="ml-3 bg-white p-4 rounded-2xl w-full">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">สถานะการนัดหมาย</span>
+        </div>
+        <div class="w-1/2 p-4">
+            <canvas id="statusChart" width="400" height="200" ></canvas>
+        </div>
+    </div>
+</div>
+<div class="flex mr-3 mb-3">
+    <div class="bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">รายได้รายเดือน</span>
+        </div>
+        <div class="p-4">
+            <canvas id="monthlyRevenueChart"></canvas>
+        </div>
+    </div>
+    <div class="ml-3 bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">รายได้ตามประเภทการรักษา</span>
+        </div>
+        <div class="p-4 w-1/2">
+            <canvas id="treatmentRevenueChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="flex mr-3 mb-3">
+    <div class="bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">ประเภทการรักษาที่ได้รับความนิยม</span>
+        </div>
+        <div class="p-4">
+            <canvas id="treatmentPopularityChart"></canvas>
+        </div>
+    </div>
+    <div class="ml-3 bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">ภาระงานของทันตแพทย์</span>
+        </div>
+        <div class="p-4 ">
+            <canvas id="dentistWorkloadChart"></canvas>
+        </div>
+    </div>
+    
+</div>
+
+<div class="flex mr-3">
+    <div class="bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">จำนวนผู้ป่วยตามเพศ</span>
+        </div>
+        <div class="p-4 w-1/2">
+            <canvas id="genderChart"></canvas>
+        </div>
+    </div>
+    <div class="ml-3 bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">จำนวนผู้ป่วยตามช่วงอายุ</span>
+        </div>
+        <div class="p-4 ">
+            <canvas id="ageChart"></canvas>
+        </div>
+    </div>
+</div>
+
+
+<!-- กราฟสถานะการนัดหมาย -->
+<script>
+    var statusData = {
+        labels: [
+            {% for status in appointments_by_status %}
+                "{{ status.status }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'จำนวนการนัดหมาย',
+            data: [
+                {% for status in appointments_by_status %}
+                    {{ status.total }},
+                {% endfor %}
+            ],
+            backgroundColor: ['#4caf50', '#36a2eb', '#ff6384'], // สีแต่ละสถานะ
+        }]
+    };
+
+    var ctx = document.getElementById('statusChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: statusData
+    });
+</script>
+
+ <!-- กราฟการนัดหมายรายเดือน -->
+<script>
+
+     var monthlyData = {
+         labels: [
+             {% for month in appointments_by_month %}
+                 "{{ month.month_name }}",
+             {% endfor %}
+         ],
+         datasets: [{
+             label: 'จำนวนการนัดหมายรายเดือน',
+             data: [
+                 {% for month in appointments_by_month %}
+                     {{ month.total }},
+                 {% endfor %}
+             ],
+             backgroundColor: 'rgba(54, 162, 235, 0.2)',
+             borderColor: 'rgba(54, 162, 235, 1)',
+             borderWidth: 1
+         }]
+     };
+
+     var ctx2 = document.getElementById('monthlyChart').getContext('2d');
+     new Chart(ctx2, {
+         type: 'bar',
+         data: monthlyData,
+         options: {
+             scales: {
+                 y: {
+                     beginAtZero: true
+                 }
+             }
+         }
+     });
+ </script>
+
+<!-- กราฟรายได้รายเดือน -->
+<script>
+    var monthlyRevenueData = {
+        labels: [
+            {% for month in revenue_by_month %}
+                "{{ month.month_name }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'รายได้รวม (บาท)',
+            data: [
+                {% for month in revenue_by_month %}
+                    {{ month.total_revenue }},
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    var ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: monthlyRevenueData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+<!-- รายได้ตามประเภทการรักษา -->
+<script>
+    var treatmentRevenueData = {
+        labels: [
+            {% for treatment in revenue_by_treatment %}
+                "{{ treatment.appointment__treatment__treatmentName }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'รายได้ (บาท)',
+            data: [
+                {% for treatment in revenue_by_treatment %}
+                    {{ treatment.total_revenue }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    var ctx2 = document.getElementById('treatmentRevenueChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut', // เปลี่ยนจาก 'bar' เป็น 'doughnut'
+        data: treatmentRevenueData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top', // ตำแหน่งของ legend
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString() + ' บาท';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<!-- ประเภทการรักษาที่ได้รับความนิยม -->
+<script>
+    var treatmentPopularityData = {
+        labels: [
+            {% for treatment in treatment_popularity %}
+                "{{ treatment.treatment__treatmentName }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'จำนวนการนัดหมาย',
+            data: [
+                {% for treatment in treatment_popularity %}
+                    {{ treatment.total_appointments }},
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    var ctx = document.getElementById('treatmentPopularityChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar', 
+        data: treatmentPopularityData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+<!-- จำนวนผู้ป่วยตามเพศ -->
+<script>
+    var genderData = {
+        labels: [
+            {% for gender in patients_by_gender %}
+                "{{ gender.gender }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            data: [
+                {% for gender in patients_by_gender %}
+                    {{ gender.total }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    var ctx = document.getElementById('genderChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie', // หรือ 'pie' สำหรับกราฟวงกลมเต็ม
+        data: genderData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString() + ' คน';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<!-- จำนวนผู้ป่วยตามช่วงอายุ -->
+<script>
+    var ageData = {
+        labels: [
+            {% for age in patients_by_age %}
+                "{{ age.range }} ปี",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'จำนวนผู้ป่วย',
+            data: [
+                {% for age in patients_by_age %}
+                    {{ age.total }},
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    var ctx = document.getElementById('ageChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar', 
+        data: ageData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+<!-- ภาระงานของทันตแพทย์ -->
+<script>
+    var dentistWorkloadData = {
+        labels: [
+            {% for dentist in dentist_workload %}
+                "{{ dentist.dentist__user__title }}{{ dentist.dentist__user__first_name }} {{ dentist.dentist__user__last_name }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'จำนวนการนัดหมาย',
+            data: [
+                {% for dentist in dentist_workload %}
+                    {{ dentist.total_appointments }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    var ctx = document.getElementById('dentistWorkloadChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: dentistWorkloadData,
+        options: {
+            indexAxis: 'y', // ทำให้กราฟเป็นแนวนอน
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock%}

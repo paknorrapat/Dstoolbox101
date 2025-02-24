@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block main %}
+
+<div class="mr-3">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full">
+          <h3 class="text-xl font-semibold mb-4 text-center">รายการเพิ่มเติม</h3>
+          <p class="text-center">คุณต้องการแก้ไขรายการเพิ่มเติมหรือไม่?</p>
+          <div class="flex justify-center items-center">
+            <form id="addForm" method="POST" >
+              {% csrf_token %}
+              <div class="mt-3">
+                        <label for="extraName">ชื่อ</label><br>
+                        <input type="text" id="extraName" name="extraName" value="{{extra.extraName}}" required class="input input-bordered w-full  my-1" >
+
+                        <label for="price">ค่าใช้จ่าย</label><br>
+                        <input type="text" id="price" name="price" value="{{extra.price}}" required class="input input-bordered w-full  my-1" >
+    
+                        <div class="mt-4 flex justify-end">
+                          <button type="submit" class="btn bg-blue-500 text-white hover:bg-blue-400 mr-2">บันทึก</button>
+                          <a href="{% url 'treatment-manage' %}" class="btn btn-ghost " >ยกเลิก</a>
+                        </div>
+              </div>
+            </form>
+          </div>
+        </div>
+</div>
+
+
+{% endblock %}

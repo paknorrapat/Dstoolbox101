@@ -1,0 +1,175 @@
+{% if request.user.is_staff %}
+<aside class="flex flex-col justify-between w-25 bg-white text-black min-h-screen shadow-lg rounded-2xl">
+    <nav class="mt-4">
+      <ul>
+        <li class="px-4 py-2">
+          <a href="{% url 'staff-home' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+            <i class="fas fa-home text-lg mb-1"></i>
+            <span class="text-sm">หน้าแรก</span>
+          </a>
+        </li>
+        <li class="px-4 py-2">
+          <a href="{% url 'profile' user.id %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+            <i class="fa-regular fa-address-card text-lg mb-1"></i>
+            <span class="text-sm">โปรไฟล์</span>
+          </a>
+        </li>
+        <li class="px-4 py-2">
+          <a href="{% url 'treatment-history' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+            <i class="fa-solid fa-folder-plus text-lg mb-1"></i>
+            <span class="text-sm">การรักษา</span>
+          </a>
+        </li>
+        <li class="px-4 py-2">
+          <a href="{% url 'calendar' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+            <i class="fa-regular fa-calendar text-lg mb-1"></i>
+            <span class="text-sm">ปฏิทิน</span>
+          </a>
+        </li>
+        <li class="px-4 py-2">
+          <a href="{% url 'member-info' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+            <i class="fa-solid fa-bed text-lg mb-1"></i>
+            <span class="text-sm">คนไข้</span>
+          </a>
+        </li>
+        <li class="px-4 py-2">
+          <a href="{% url 'dentist-manage' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+            <i class="fa-solid fa-user-doctor text-lg mb-1"></i>
+            <span class="text-sm">ทันตแพทย์</span>
+          </a>
+        </li>
+        <li class="px-4 py-2">
+          <a href="{% url 'treatment-manage' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+            <i class="fa-solid fa-tooth text-lg mb-1"></i>
+            <span class="text-sm">ประเภทการรักษา</span>
+          </a>
+        </li>            
+      </ul>
+    </nav>
+    <div class="px-4 py-2 mb-3">
+      <a href="{% url 'logout' %}" class="flex flex-col items-center px-4 py-2 hover:bg-red-500 hover:text-white rounded-lg" onclick="logout()" >
+        <i class="fa-solid fa-arrow-right-from-bracket text-lg mb-1"></i>
+        <span class="text-sm">ออกจากระบบ</span>
+      </a>
+    </div>
+  </aside>
+
+{% elif request.user.is_manager %}
+<aside class="flex flex-col justify-between w-25 bg-white text-black min-h-screen shadow-lg rounded-2xl">
+  <nav class="mt-4">
+    <ul>
+      <li class="px-4 py-2">
+        <a href="{% url 'dashboard' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+          <i class="fa-solid fa-chart-column text-lg mb-1"></i>
+          <span class="text-sm">แดชบอร์ด</span>
+        </a>
+      </li>
+      <li class="px-4 py-2">
+        <a href="{% url 'user-list' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+          <i class="fa-solid fa-user text-lg mb-1"></i>
+          <span class="text-sm">สมาชิก</span>
+        </a>
+      </li>
+  
+      <li class="px-4 py-2">
+        <a href="{% url 'staff-list' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+          <i class="fa-solid fa-user-nurse text-lg mb-1"></i>
+          <span class="text-sm">พนักงาน</span>
+        </a>
+      </li>       
+    </ul>
+  </nav>
+  <div class="px-4 py-2 mb-3">
+    <a href="{% url 'logout' %}" class="flex flex-col items-center px-4 py-2 hover:bg-red-500 hover:text-white rounded-lg" onclick="logout()" >
+      <i class="fa-solid fa-arrow-right-from-bracket text-lg mb-1"></i>
+      <span class="text-sm">ออกจากระบบ</span>
+    </a>
+  </div>
+</aside>
+{% else %}
+<aside class="flex flex-col justify-between w-25 bg-white text-black min-h-screen shadow-lg rounded-2xl">
+  <nav class="mt-4">
+    <ul>
+      <li class="px-4 py-2">
+        <a href="{% url 'member-home' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+          <i class="fas fa-home text-lg mb-1"></i>
+          <span class="text-sm">หน้าแรก</span>
+        </a>
+      </li>
+      <li class="px-4 py-2">
+        <a href="{% url 'profile' user.id %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+          <i class="fa-regular fa-address-card text-lg mb-1"></i>
+          <span class="text-sm">โปรไฟล์</span>
+        </a>
+      </li>
+      <li class="px-4 py-2">
+        <a href="{% url 'calendar' %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+          <i class="fa-regular fa-calendar text-lg mb-1"></i>
+          <span class="text-sm">ปฏิทิน</span>
+        </a>
+      </li>
+      <li class="px-4 py-2">
+        <a href="{% url 't-history' user.id %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+          <i class="fa-solid fa-file-medical text-lg mb-1"></i>
+          <span class="text-sm">ประวัติการรักษา</span>
+        </a>
+      </li>
+      <li class="px-4 py-2">
+        <a href="{% url 'braces-progress' user.id %}" class="flex flex-col items-center px-4 py-2 hover:bg-blue-500 hover:text-white rounded-lg nav-item" >
+          <i class="fa-solid fa-teeth-open text-lg mb-1"></i>
+          <span class="text-sm">สถานะการจัดฟัน</span>
+        </a>
+      </li>       
+    </ul>
+  </nav>
+  <div class="px-4 py-2 mb-3">
+    <a href="{% url 'logout' %}" class="flex flex-col items-center px-4 py-2 hover:bg-red-500 hover:text-white rounded-lg" onclick="logout()" >
+      <i class="fa-solid fa-arrow-right-from-bracket text-lg mb-1"></i>
+      <span class="text-sm">ออกจากระบบ</span>
+    </a>
+  </div>
+</aside>
+{% endif %}
+<script>
+ // เลือกทุกๆ ลิงก์ในเมนู
+const navItems = document.querySelectorAll('.nav-item');
+
+// ทำการวนลูปและเพิ่ม event listener เพื่อสลับคลาส active
+navItems.forEach(item => {
+  item.addEventListener('click', function(event) {
+    // ป้องกันไม่ให้หน้าเว็บรีเฟรช
+    event.preventDefault();
+
+    // ลบคลาส active ออกจากทุกๆ ไอเท็ม
+    navItems.forEach(i => i.classList.remove('bg-blue-500', 'text-white'));
+
+    // เพิ่มคลาส active ให้กับไอเท็มที่ถูกคลิก
+    item.classList.add('bg-blue-500', 'text-white');
+
+    // บันทึกสถานะของลิงก์ที่ถูกคลิก
+    localStorage.setItem('activeNavItem', item.getAttribute('href'));
+    
+    // ไปยังหน้าใหม่
+    window.location.href = item.getAttribute('href');
+  });
+});
+
+// เมื่อหน้าโหลดใหม่ ให้ตรวจสอบสถานะของปุ่มที่ถูกคลิก
+window.addEventListener('load', function() {
+  const activeNavItem = localStorage.getItem('activeNavItem');
+  if (activeNavItem) {
+    navItems.forEach(item => {
+      if (item.getAttribute('href') === activeNavItem) {
+        item.classList.add('bg-blue-500', 'text-white');
+      }
+    });
+  }
+});
+
+ // ฟังก์ชัน logout
+ function logout() {
+    // ลบสถานะ active ของเมนูออกจาก localStorage เมื่อทำการออกจากระบบ
+    localStorage.removeItem('activeNavItem');
+  }
+</script>
+  

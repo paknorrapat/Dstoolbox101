@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block main %}
+<div class="flex mb-3">
+    <div class=" mr-3 bg-white p-4  rounded-2xl w-1/4 h-full mb-4  flex flex-col justify-between ">
+      <div class="ml-3 mt-1 mb-1 ">
+        <span class="text-blue-800">รายได้วันนี้</span>
+      </div>
+      <div class="flex-grow flex justify-center items-center mb-5">
+        <h1 class="text-center text-3xl font-bold"><span class="">{{total_income_today|floatformat:0|intcomma}} บาท</h1>
+      </div>
+    </div>
+    <div class=" mr-3 bg-white p-4  rounded-2xl w-1/4 h-full mb-4 flex flex-col justify-between">
+      <div class="ml-3 mt-1 mb-1">
+        <span class="text-blue-800">รายได้เดือนนี้</span>
+      </div>
+      <div class="flex-grow flex justify-center items-center mb-5">
+        <h1 class="text-center text-3xl font-bold">{{total_income_month|floatformat:0|intcomma}} บาท</h1>
+      </div>
+    </div>
+    <div class=" mr-3 bg-white p-4  rounded-2xl w-1/4 h-full mb-4 flex flex-col justify-between">
+        <div class="ml-3 mt-1 mb-1">
+          <span class="text-blue-800">รายได้ทั้งหมด</span>
+        </div>
+        <div class="flex-grow flex justify-center items-center mb-5">
+          <h1 class="text-center text-3xl font-bold">{{total_income_all|floatformat:0|intcomma}} บาท</h1>
+        </div>
+    </div>
+    <div class=" mr-3 bg-white p-8  rounded-2xl h-8 flex items-center justify-center">
+        <a href="{% url 'dashboard' %}">
+            <i class="fa-solid fa-left-long w-full text-2xl"></i>
+        </a>
+        
+    </div>
+</div>
+<form method="get" class="flex items-center space-x-4 mb-3 w-3/4 bg-white rounded-2xl p-6">
+    <label for="year" class="font-medium">เลือกปี:</label>
+    <select name="year" id="year" class="select select-bordered w-40">
+        <option value="">ปีปัจจุบัน</option>
+        {% for year in years %}
+        <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="month" class="font-medium">เลือกเดือน:</label>
+    <select name="month" id="month" class="select select-bordered w-40">
+        <option value="">ทั้งปี</option>
+        {% for number, name in months %}
+        <option value="{{ number }}" {% if number == selected_month %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="day" class="font-medium">เลือกวัน:</label>
+    <select name="day" id="day" class="select select-bordered w-32">
+        <option value="">ทั้งเดือน</option>
+        {% for day in days %}
+        <option value="{{ day }}" {% if day == selected_day %}selected{% endif %}>{{ day }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-outline">กรองข้อมูล</button>
+</form>
+<div class="flex mb-3">
+    <div class=" mr-3 bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">รายได้</span>
+        </div>
+        <div class="p-4 ">
+            <canvas id="monthlyRevenueChart"></canvas>
+        </div>
+    </div>
+
+    <div class="mr-3 bg-white p-4 rounded-2xl w-1/2 ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">รายได้ตามประเภทการรักษา</span>
+        </div>
+        <div class="p-4 mx-16">
+            <canvas id="treatmentRevenueChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<div class="flex mb-3">
+    <div class=" mr-3 bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">จำนวนการนัดหมาย</span>
+        </div>
+        <div class="p-4 w-full">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+    </div>
+
+    <div class="mr-3 bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">จำนวนสถานะการนัดหมาย</span>
+        </div>
+        <div class="p-4 w-2/3 mx-16">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+
+    <div class="mr-3 bg-white p-4 rounded-2xl w-full ">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">ประเภทการรักษายอดนิยม</span>
+        </div>
+        <div class="p-4 ">
+            <canvas id="treatmentPopularityChart"></canvas>
+        </div>
+    </div>
+
+
+
+</div>
+
+<!-- กราฟรายได้ทั้งหมด-->
+<script>
+    var monthlyRevenueData = {
+        labels: [
+            {% for month in revenue_by_month %}
+                "{{ month.month_name }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'รายได้รวม (บาท)',
+            data: [
+                {% for month in revenue_by_month %}
+                    {{ month.total_revenue }},
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    var ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: monthlyRevenueData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+<!-- รายได้ตามประเภทการรักษา -->
+<script>
+    var treatmentRevenueData = {
+        labels: [
+            {% for treatment in revenue_by_treatment %}
+                "{{ treatment.appointment__treatment__treatmentName }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'รายได้ (บาท)',
+            data: [
+                {% for treatment in revenue_by_treatment %}
+                    {{ treatment.total_revenue }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(245, 40, 145, 0.4)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(245, 40, 145, 1)',
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    var ctx2 = document.getElementById('treatmentRevenueChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut', // เปลี่ยนจาก 'bar' เป็น 'doughnut'
+        data: treatmentRevenueData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom', // ตำแหน่งของ legend
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString() + ' บาท';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<!-- กราฟการนัดหมาย -->
+<script>
+
+    var monthlyData = {
+        labels: [
+            {% for month in appointments_by_month %}
+                "{{ month.month_name }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'จำนวนการนัดหมาย',
+            data: [
+                {% for month in appointments_by_month %}
+                    {{ month.total }},
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    var ctx2 = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: monthlyData,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+
+<!-- กราฟสถานะการนัดหมาย -->
+<script>
+    var statusData = {
+        labels: [
+            {% for status in appointments_by_status %}
+                "{{ status.status }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'จำนวนการนัดหมาย',
+            data: [
+                {% for status in appointments_by_status %}
+                    {{ status.total }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 206, 86, 0.2)'
+            ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 206, 86, 1)',
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    var ctx = document.getElementById('statusChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: statusData
+    });
+</script>
+
+<!-- ประเภทการรักษาที่ได้รับความนิยม -->
+<script>
+    var treatmentPopularityData = {
+        labels: [
+            {% for treatment in treatment_popularity %}
+                "{{ treatment.treatment__treatmentName }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'จำนวนการนัดหมาย',
+            data: [
+                {% for treatment in treatment_popularity %}
+                    {{ treatment.total_appointments }},
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    var ctx = document.getElementById('treatmentPopularityChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar', 
+        data: treatmentPopularityData,
+        options: {
+            indexAxis: 'y', // ทำให้กราฟเป็นแนวนอน
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+    

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="mr-3">
+    <div class="w-full">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full">
+            <h3 class="text-xl font-semibold mb-4 text-center">เลือกวันเวลา</h3>
+            <div class="flex justify-center items-center">
+                <form  method="POST" >
+                {% csrf_token %}
+                    <div class="mt-4">
+                                <label for="dentist">ชื่อทันตแพทย์</label><br>
+                                <input type="text" id="dentistName" name="dentist" readonly value="{{appointment.dentist.dentistName}}" class="input input-bordered w-full  my-1">
+                                <input type="hidden" id="dentist" name="dentist" value="{{appointment.dentist.id}}" class="input input-bordered w-full max-w-xs my-1">
+
+                                <label for="date">วันที่นัดหมาย</label><br>
+                                <input type="date" id="date" name="date" required class="input input-bordered w-full my-1" /><br>
+                            
+                                <!-- เพิ่ม Dropdown สำหรับ Time Slot -->
+                                <label for="time_slot">เวลา</label><br>
+                                <select id="time_slot" name="time_slot" required class="select select-bordered w-full   my-1">
+                                    <option value="">เลือกเวลา</option>
+                                </select> <br>
+
+                                <div class="mt-4 flex justify-center">
+                                <button type="submit" class="btn bg-blue-500 text-white hover:bg-blue-400 mr-2">เพิ่มวันเวลา</button>
+                                <a href="{{ request.META.HTTP_REFERER|default:default_redirect }}" class="btn btn-ghost " >ยกเลิก</a>
+                                </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // ปรับค่า min ของวันที่ให้ไม่สามารถเลือกวันย้อนหลังได้
+    document.addEventListener('DOMContentLoaded', function() {
+        var today = new Date().toISOString().split('T')[0];  // รับวันที่ปัจจุบัน
+        document.getElementById('date').setAttribute('min', today);  // กำหนด min ให้เป็นวันที่ปัจจุบัน
+    });
+
+
+    function updateTimeSlots() {
+    var selectedDate = document.getElementById('date').value;
+    var selectedDentist = document.getElementById('dentist').value;
+    var timeSlotSelect = document.getElementById('time_slot');
+
+    // ล้าง Time Slot เก่า
+    timeSlotSelect.innerHTML = '<option value="">เลือกเวลา</option>';
+
+    // ตรวจสอบว่ามีการเลือกทั้งวันที่และทันตแพทย์
+    if (selectedDate && selectedDentist) {
+        // ดึงข้อมูล Slot เวลาจาก Server โดยใช้ Ajax
+        fetch(`/member/get-time-slots/?date=${selectedDate}&dentist_id=${selectedDentist}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.slots && data.slots.length > 0) {
+                    data.slots.forEach(function(slot) {
+                        var option = document.createElement('option');
+                        option.value = slot;
+                        option.textContent = slot;
+                        timeSlotSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching time slots:', error);
+            });
+    }
+}
+
+// เชื่อม Event กับ Date และ Dentist Dropdown
+document.getElementById('date').addEventListener('change', function() {
+    // เมื่อมีการเปลี่ยนวัน, ลบเวลาเดิม
+    document.getElementById('time_slot').value = '';  // ลบการเลือกเวลา
+    updateTimeSlots();  // อัปเดตเวลาใหม่
+});
+
+document.getElementById('dentist').addEventListener('change', updateTimeSlots);
+
+// เมื่อหน้าโหลดให้โหลด slot เวลาทั้งหมด
+document.addEventListener('DOMContentLoaded', function() {
+    updateTimeSlots();
+});
+</script>     
+{% endblock %}

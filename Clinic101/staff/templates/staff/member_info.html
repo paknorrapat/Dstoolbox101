@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block main %}
+<div class="mr-3">
+  <div class="  bg-white p-4 rounded-2xl w-full">
+      <div class="ml-3 mt-1">
+        <span class="text-lg text-blue-800">ข้อมูลคนไข้</span>
+      </div>
+      <div class="overflow-x-auto p-4">
+        <form method="GET" class="flex items-center space-x-2 mb-4">
+          <input 
+            type="text" 
+            name="search" 
+            placeholder="ค้นหาชื่อคนไข้..."
+            class=" text-sm border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 p-1 w-1/3"
+            value="{{ request.GET.search }}">
+          <button type="submit" class="text-blue-500">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </form>
+
+        <table class="table ">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th class="text-center">ชื่อ-นามสกุล</th>
+              <th class="text-center">ชื่อผู้ใช้งาน</th>
+              <th class="text-center">ข้อมูลส่วนตัว</th>
+              <th class="text-center">ประวัติการรักษา</th>
+              <th class="text-center">สถานะการจัดฟัน</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in user_page_obj %}
+            <!-- row 1 -->
+            <tr>
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="avatar">
+                    <div class="mask mask-squircle h-12 w-12">
+                      {% if user.profile.image %}
+                        <img src="{{user.profile.image.url}}" alt="รูปโปรไฟล์ของผู้ใช้">
+                      {% else %}
+                        <i class="fa-solid fa-user-circle text-gray-500 text-5xl "></i>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div>
+                    <div class="text-sm">{{user.title}}{{user.first_name}} {{user.last_name}}</div>
+                  </div>
+                </div>
+              </td>
+              <th class="text-center">
+                {{user.username}}
+              </th>          
+              <th class="text-center">
+                <a href="{% url 'profile' user.id %}" >
+                  <i class="fa-solid fa-id-card text-xl"></i>
+                </a>
+        
+              </th>
+              <th class="text-center">
+                <a href="{% url 't-history' user.id %}" >
+                  <i class="fa-solid fa-file-medical text-xl"></i>
+                </a>
+              </th>
+              <th class="text-center">
+                <a href="{% url 'braces-progress' user.id%}">
+                  <i class="fa-solid fa-teeth-open text-xl"></i>
+                </a>
+              </th>
+            </tr>
+            
+          {% endfor %}
+          </tbody>
+          
+        </table>
+        <div class="flex justify-center mt-4">
+          <nav class="btn-group">
+              {% if user_page_obj.has_previous %}
+              <a href="?user_page=1" class="btn btn-outline btn-sm ">หน้าแรก</a>
+              <a href="?user_page={{ user_page.previous_page_number }}" class="btn btn-outline btn-sm">ก่อนหน้า</a>
+              {% endif %}
+      
+              <span class="btn btn-disabled btn-sm">หน้า {{ user_page_obj.number }} จาก {{ user_page_obj.paginator.num_pages }}</span>
+      
+              {% if user_page_obj.has_next %}
+              <a href="?user_page={{ user_page_obj.next_page_number }}" class="btn btn-outline btn-sm">ถัดไป</a>
+              <a href="?user_page={{ user_page_obj.paginator.num_pages }}" class="btn btn-outline btn-sm">หน้าสุดท้าย</a>
+              {% endif %}
+          </nav>
+      </div>
+        
+      </div>
+    </div>
+</div>
+{% endblock%}

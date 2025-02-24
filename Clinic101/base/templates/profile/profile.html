@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="mr-3">
+    <div class="w-full bg-white p-8 shadow-lg rounded-2xl">
+        <div class="my-1">
+            <!-- Messages Section -->
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div role="alert" class="alert alert-success flex items-center p-4 text-green-600 bg-green-100 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="ml-2">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if user.profile and user.profile.phone %}
+                <div class="flex">
+                    <h2 class="text-2xl font-bold">ข้อมูลโปรไฟล์</h2>
+                    {% if user.id == request.user.id %}
+                    <a href="{% url 'update-profile' user.id %}" class="py-1 px-3 text-gray-500 hover:text-gray-700">
+                        <i class="fa-regular fa-pen-to-square text-xl "></i>
+                    </a>
+                    {% endif %}
+                </div>  
+                <div class="flex flex-wrap">
+                    <div class="w-1/2 p-6">
+                        <div class="my-2  flex justify-center">
+                            {% if user.profile.image %}
+                                <img src="{{user.profile.image.url}}" alt="รูปโปรไฟล์ของผู้ใช้" class="w-32 h-32 rounded-full object-cover">
+                            {% else %}
+                                <i class="fa-solid fa-user-circle text-gray-500 text-6xl "></i>
+                            {% endif %}
+                        </div>
+
+                        <div class="my-2">
+                            <label>ชื่อผู้ใช้งาน</label>
+                        </div>
+                        <input value="{{user.username}}" readonly class="input input-bordered w-full h-9" />
+                
+                        <div class="my-2">
+                            <label>ชื่อ-นามสกุล</label>
+                        </div>
+                        <input value="{{user.title}} {{user.first_name}} {{user.last_name}}" readonly class="input input-bordered w-full h-9" />
+                
+                        <div class="my-2">
+                            <label>อีเมล</label>
+                        </div>
+                        <input value="{{user.email}}" readonly class="input input-bordered w-full h-9" />
+                
+            
+                        <div class="my-2">
+                            <label>เบอร์โทร</label>
+                        </div>
+                        <input value="{{user.profile.phone}}" readonly class="input input-bordered w-full h-9" />
+
+                        <div class="my-2">
+                            <label>วันเกิด</label>
+                        </div>
+                        <input value="{{user.profile.birthDate|date:'Y-m-d'}}" readonly class="input input-bordered w-full h-9" />
+                
+                        <div class="my-2">
+                            <label>อายุ</label>
+                        </div>
+                        <input value="{{ age }} ปี" readonly class="input input-bordered w-full h-9" />
+                
+                        <div class="my-2">
+                            <label>เพศ</label>
+                        </div>
+                        <input value="{{user.profile.gender}}" readonly class="input input-bordered w-full h-9" />
+                
+
+                    </div>
+                
+                    <div class="w-1/2 p-2 mt-8 ">
+                        
+                
+                        <div class="my-2">
+                            <label>น้ำหนัก</label>
+                        </div>
+                        <input value="{{user.profile.weight}} กิโลกรัม" readonly class="input input-bordered w-full h-9" />
+                
+                        <div class="my-2">
+                            <label>ส่วนสูง</label>
+                        </div>
+                        <input value="{{user.profile.height}} เซนติเมตร" readonly class="input input-bordered w-full h-9" />
+                
+                        <div class="my-2">
+                            <label>หมู่เลือด</label>
+                        </div>
+                        <input value="{{user.profile.bloodType}}" readonly class="input input-bordered w-full h-9" />
+                
+                        <div class="my-2 text-red-500">
+                            <label>โรคประจำตัว</label>
+                        </div>
+                        <input value="{{user.profile.ud}}" readonly class="input input-bordered w-full h-9" />
+                
+                        <div class="my-2 text-red-500">
+                            <label>อาการโรคประจำตัว</label>  
+                        </div>
+                        <textarea id="ud_symptoms" name="ud_symptoms" readonly class="textarea textarea-bordered w-full h-20">{{user.profile.ud_symptoms}}</textarea>
+            
+                                
+                        <div class="my-2 text-red-500">
+                            <label>ข้อมูลการแพ้ยา</label>
+                        </div>
+                        <input id="allergic" name="allergic" value="{{user.profile.allergic}}" readonly class="input input-bordered w-full  h-9" />
+
+                        <div class="my-2 text-red-500">
+                            <label>อาการแพ้ยา</label> 
+                        </div>
+                        <textarea id="allergic_symptoms" name="allergic_symptoms" readonly class="textarea textarea-bordered w-full h-20">{{user.profile.allergic_symptoms}}</textarea>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-red-500">กรุณาเพิ่มข้อมูลส่วนตัว<a href="{% url 'profile-form' user.id%}" class="fa-solid fa-circle-plus ml-2 text-blue-500 text-2xl"></a></p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

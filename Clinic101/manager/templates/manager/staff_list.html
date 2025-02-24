@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="mr-3">
+    <div class="bg-white p-4 rounded-2xl w-full">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">รายการพนักงาน</span>
+        </div>
+        <table class="table ">
+            <!-- head -->
+            <thead>
+              <tr>
+                <th class="text-center">ชื่อ-นามสกุล</th>
+                <th class="text-center">ชื่อผู้ใช้งาน</th>
+                <th class="text-center">อีเมล</th>
+                <th class="text-center">บทบาท</th>
+                <th class="text-center">เข้าสู่ระบบครั้งล่าสุด</th>
+                <th class="text-center">ตัวเลือก</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in page_obj %}
+              <!-- row 1 -->
+              <tr>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-12 w-12">
+                        {% if user.profile.image %}
+                          <img src="{{user.profile.image.url}}" alt="รูปโปรไฟล์ของผู้ใช้">
+                        {% else %}
+                          <i class="fa-solid fa-user-circle text-gray-500 text-5xl "></i>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div>
+                      <div class="text-sm">{{user.title}}{{user.first_name}} {{user.last_name}}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center">
+                    <div class="text-sm">{{user.username}}</div>
+                </td>
+                <td class="text-center">
+                    <div class="text-sm">{{user.email}}</div>
+                </td>
+                <td class="text-center">
+                    {% if user.is_staff %}
+                        พนักงาน
+                    {% else %}
+                        สมาชิก
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    <div class="text-sm">{{user.last_login|date:"d M Y, H:i" }}</div>
+                </td>
+                <td class="text-center">
+                    <a href="#"  onclick="openModal({{ user.id }}, '{% if user.is_staff %}Staff{% else %}Member{% endif %}')">
+                        <i class="fa-solid fa-user-pen text-xl text-black"></i>
+                    </a>
+                    <a href="#" onclick="openDeleteModal('{{ user.id }}')">
+                        <i class="fa-solid fa-trash text-xl mr-2 text-black"></i>
+                    </a>
+                </td>
+      
+                
+              </tr>      
+            {% endfor %}
+            </tbody>
+            
+            
+          </table>
+          <div class="flex justify-center mt-4">
+            <nav class="btn-group">
+                {% if page_obj.has_previous %}
+                <a href="?page=1" class="btn btn-outline btn-sm">หน้าแรก</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline btn-sm">ก่อนหน้า</a>
+                {% endif %}
+      
+                <span class="btn btn-disabled btn-sm">หน้า {{ page_obj.number }} จาก {{ page_obj.paginator.num_pages }}</span>
+      
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline btn-sm">ถัดไป</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline btn-sm">หน้าสุดท้าย</a>
+                {% endif %}
+            </nav>
+          </div>
+
+    </div>
+</div>
+<!-- Modal -->
+<div id="updateRoleModal" class="hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="modal-content bg-white p-6 rounded-lg shadow-lg w-96">
+        <h3 class="text-lg text-blue-800 mb-4">แก้ไขบทบาทผู้ใช้งาน</h3>
+        <form id="updateRoleForm" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" id="user_id" />
+            <div class="mb-4">
+                <label for="role" class="mb-2 text-sm font-medium">เลือกบทบาท:</label>
+                <select name="role" id="role" class="select select-bordered w-full">
+                    <option value="Staff">พนักงาน</option>
+                    <option value="Member">สมาชิก</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-3">
+              <button type="submit" class="btn bg-blue-500 text-white hover:bg-blue-400 ">บันทึก</button>
+              <button type="button" class="btn btn-ghost" onclick="closeModal()">ยกเลิก</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal ลบ-->
+<div id="deleteModal" class="fixed inset-0 flex items-center justify-center z-50 hidden bg-gray-500 bg-opacity-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+      <h3 class="text-xl text-red-600 mb-4">ยืนยันการลบ</h3>
+      <p>คุณต้องการลบผู้ใช้งานนี้หรือไม่?</p>
+      <form id="deleteForm" method="POST">
+        {% csrf_token %}
+        <div class="mt-4 flex justify-end">
+          <button type="submit" class="btn btn-error mr-2">ลบ</button>
+          <button type="button" class="btn btn-ghost " onclick="closeDeleteModal()">ยกเลิก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+<script>
+function openModal(userId, currentRole) {
+    // ตั้งค่าค่าเริ่มต้นในฟอร์ม
+    document.getElementById('user_id').value = userId;
+    // ตั้งค่าบทบาทปัจจุบันใน select
+    const roleSelect = document.getElementById('role');
+    if (roleSelect) {
+        roleSelect.value = currentRole;
+    }
+
+    // แสดง modal
+    document.getElementById('updateRoleModal').classList.remove('hidden');
+    document.getElementById('updateRoleForm').action = `/manager/update_role/`; 
+}
+
+function closeModal() {
+    // ซ่อน modal
+    document.getElementById('updateRoleModal').classList.add('hidden');
+}
+
+  // ลบบบบบ #####
+  function openDeleteModal(user_id) {
+    document.getElementById('deleteModal').classList.remove('hidden');
+    document.getElementById('deleteForm').action = `/manager/delete_user/${user_id}/`; 
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+  }
+</script>
+{% endblock %}

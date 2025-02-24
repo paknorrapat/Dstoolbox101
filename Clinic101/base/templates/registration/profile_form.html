@@ -1,0 +1,214 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic101</title>
+    {% tailwind_css %}
+    <!-- ลิงก์ Google Font Fahkwang -->
+    <link href="https://fonts.googleapis.com/css2?family=Fahkwang:wght@400;600&display=swap" rel="stylesheet">
+   
+</head>
+<body class="bg-[#9bc0ff] font-fahkwang">
+    <div class="flex flex-col min-h-screen justify-center items-center">
+            <div class="w-1/3 my-5">
+                <div class="bg-white p-8 rounded-lg shadow-lg ">
+                    
+                    <div class=" my-3 text-center"> 
+                        <h2 class="text-2xl font-bold">ข้อมูลโปรไฟล์</h2>
+                    </div>  
+                    <form  method="post" enctype="multipart/form-data" id="profileForm">
+                        {% csrf_token %}
+                        <div class="my-2">
+                            <label>เลขประจำตัวประชาชน</label>
+                        </div>
+                        <input type="text" id="idCard" name="idCard" maxlength="13" pattern="\d{13}" required class="input input-bordered w-full  h-10" />
+
+                        <div class="my-2">
+                            <label>เบอร์โทรศัพท์มือถือ</label>
+                        </div>
+                        <input type="text" id="phone" name="phone"  maxlength="10" pattern="\d{10}" required class="input input-bordered w-full  h-10" />
+                        
+                        <div class="my-2">
+                            <label>ที่อยู่</label>
+                        </div>
+                        <textarea type="textarea" id="address" name="address"  required class="textarea textarea-bordered w-full h-15"></textarea>
+
+                        <div class="my-2">
+                            <label>วันเกิด</label>
+                        </div>
+                        <input type="date" id="birthDate" name="birthDate"  required class="input input-bordered w-full  h-10" />
+
+                        <div class="my-2">
+                            <label>เพศ</label>
+                        </div>
+                        <select id="gender" name="gender" required class="select select-bordered w-1/3 max-w-xs">
+                            <option value="" disabled selected>เลือกเพศ</option> 
+                            <option value="ชาย">ชาย</option>
+                            <option value="หญิง">หญิง</option>
+                        </select>
+                        
+                        <div class="my-2">
+                            <label>น้ำหนัก</label>
+                        </div>
+                        <input type="number" id="weight" name="weight"  required class="input input-bordered w-full  h-10" />
+
+                        <div class="my-2">
+                            <label>ส่วนสูง</label>
+                        </div>
+                        <input type="number" id="height" name="height"  required class="input input-bordered w-full  h-10" />
+
+                        <div class="my-2">
+                            <label>หมู่เลือด</label>
+                        </div>
+                        <select id="bloodType" name="bloodType" required class="select select-bordered w-1/3 max-w-xs">
+                            <option value="" disabled selected>เลือกหมู่เลือด</option> 
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="AB">AB</option>
+                            <option value="O">O</option>
+                        </select>
+                        
+                        <div class="my-2">
+                            <label>โรคประจำตัว</label>
+                        </div>
+                        <input type="text" id="ud" name="ud"  required class="input input-bordered w-full  h-10" />
+
+                        <div class="my-2">
+                            <label>อาการโรคประจำตัว</label>  
+                        </div>
+                        <textarea id="ud_symptoms" name="ud_symptoms" required class="textarea textarea-bordered w-full h-20"></textarea>
+            
+                                
+                        <div class="my-2">
+                            <label>ข้อมูลการแพ้ยา</label>
+                        </div>
+                        <input id="allergic" name="allergic" value="{{user.profile.allergic}}"  class="input input-bordered w-full  h-9" required/>
+
+                        <div class="my-2">
+                            <label>อาการแพ้ยา</label> 
+                        </div>
+                        <textarea id="allergic_symptoms" name="allergic_symptoms" required class="textarea textarea-bordered w-full h-20"></textarea>
+
+                        <div class="my-2">
+                            <label>รูปตนเอง</label>
+                        </div>                        
+                        <input type="file" id="image" name="image"  required class="file-input file-input-bordered  w-full h-10" />
+
+                        <div class="my-3 flex items-center">
+                            <input type="checkbox" id="acceptPrivacy" name="acceptPrivacy" required class="mr-2 scale-150" />
+                            <label for="acceptPrivacy" class="text-sm">ฉันยอมรับและรับทราบ</label><a class="text-blue-500 underline ml-2 text-sm" onclick="openModal()">นโยบายความเป็นส่วนตัว</a>
+                        </div>
+
+                        <div class="mt-3 text-center">
+                            <button class="btn btn-neutral text-white" type="button" onclick="showModal(event)">บันทึกข้อมูล</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+    </div>
+
+   <!-- Modal -->
+    <div id="privacyPolicyModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-semibold text-center mb-6 text-gray-800">นโยบายความเป็นส่วนตัว</h2>
+            
+            <div class="space-y-4 text-gray-700">
+                <p>เราให้ความสำคัญกับความเป็นส่วนตัวของผู้ใช้บริการเว็บไซต์ของเราและมุ่งมั่นที่จะรักษาข้อมูลส่วนบุคคลของผู้ใช้ให้ปลอดภัย ดังนั้นเราจึงขออธิบายนโยบายความเป็นส่วนตัวของเรา ดังนี้</p>
+                
+                <div class="space-y-2">
+                    <h3 class="font-semibold">1. การเก็บข้อมูลส่วนบุคคล</h3>
+                    <p>เราจะเก็บข้อมูลส่วนบุคคลของคุณเมื่อคุณสมัครสมาชิกหรือใช้บริการบนเว็บไซต์ ซึ่งข้อมูลที่เราเก็บรวมถึง ชื่อผู้ใช้งาน อีเมล เบอร์โทรศัพท์ ที่อยู่ วันเกิด และข้อมูลที่เกี่ยวข้องกับการใช้งานเว็บไซต์</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-semibold">2. การใช้ข้อมูลส่วนบุคคล</h3>
+                    <p>ข้อมูลส่วนบุคคลที่เราเก็บจะถูกใช้เพื่อ:</p>
+                    <ul class="list-disc pl-6">
+                        <li>การให้บริการที่คุณร้องขอ</li>
+                        <li>การปรับปรุงประสบการณ์การใช้งาน</li>
+                        <li>การส่งข้อมูลข่าวสารและอัปเดตเกี่ยวกับผลิตภัณฑ์หรือบริการ</li>
+                        <li>การรักษาความปลอดภัยและการป้องกันการทุจริต</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-semibold">3. การแชร์ข้อมูลส่วนบุคคล</h3>
+                    <p>เราจะไม่แชร์ข้อมูลส่วนบุคคลของคุณกับบุคคลที่สามโดยไม่ได้รับความยินยอมจากคุณ ยกเว้นในกรณีที่กฎหมายกำหนด หรือเพื่อป้องกันการทุจริต</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-semibold">4. การรักษาความปลอดภัยของข้อมูล</h3>
+                    <p>เรามีมาตรการทางเทคนิคและทางกายภาพในการรักษาความปลอดภัยของข้อมูลส่วนบุคคลของคุณ แต่โปรดทราบว่าไม่มีระบบใดที่สามารถรับประกันความปลอดภัยได้ 100%</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-semibold">5. การใช้คุกกี้ (Cookies)</h3>
+                    <p>เว็บไซต์ของเราใช้คุกกี้เพื่อช่วยในการปรับปรุงประสบการณ์การใช้งาน โดยคุกกี้จะช่วยจดจำการตั้งค่าของผู้ใช้และช่วยให้เว็บไซต์ทำงานได้ดีขึ้น</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-semibold">6. การเข้าถึงข้อมูล</h3>
+                    <p>คุณสามารถเข้าถึงและแก้ไขข้อมูลส่วนบุคคลของคุณได้ทุกเมื่อผ่านการตั้งค่าบัญชีผู้ใช้</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-semibold">7. การเปลี่ยนแปลงนโยบายความเป็นส่วนตัว</h3>
+                    <p>นโยบายความเป็นส่วนตัวนี้อาจมีการเปลี่ยนแปลงได้โดยไม่ต้องแจ้งให้ทราบล่วงหน้า ดังนั้นโปรดตรวจสอบนโยบายความเป็นส่วนตัวของเราเป็นระยะๆ</p>
+                </div>
+
+                <div class="space-y-2">
+                    <p>หากคุณมีคำถามหรือข้อสงสัยเกี่ยวกับนโยบายความเป็นส่วนตัวนี้ โปรดติดต่อเราที่ <span class="text-blue-500">Clinic101@gmail.com</span></p>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button class="btn btn-neutral text-white" onclick="closeModal()">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>   
+</html>
+
+<script>
+    function showModal(event) {
+        event.preventDefault();  // ป้องกันไม่ให้ฟอร์มถูกส่งก่อน
+        // ตรวจสอบว่าไฟล์ถูกเลือกหรือไม่
+        var fileInput = document.getElementById('image');
+        if (!fileInput.files.length) {
+            alert("กรุณาเลือกไฟล์รูปภาพ");
+            return;
+        }
+
+         // ตรวจสอบว่า checkbox ได้ถูกติ๊กหรือยัง
+        var acceptPrivacy = document.getElementById('acceptPrivacy');
+        if (!acceptPrivacy.checked) {
+            alert("กรุณายอมรับนโยบายความเป็นส่วนตัว");
+            return;
+        }
+
+        // ตรวจสอบฟิลด์ required อื่นๆ
+        var form = document.getElementById('profileForm');
+        if (!form.checkValidity()) {
+            // หากฟอร์มไม่ครบถ้วน (ฟิลด์ required ยังไม่ได้กรอก)
+            alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+            return;
+        }
+
+        document.getElementById('profileForm').submit();
+    }
+
+ // Function to open the modal
+ function openModal() {
+        document.getElementById('privacyPolicyModal').classList.remove('hidden');
+    }
+
+    // Function to close the modal
+    function closeModal() {
+        document.getElementById('privacyPolicyModal').classList.add('hidden');
+    }
+</script>

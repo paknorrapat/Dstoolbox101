@@ -1,0 +1,33 @@
+<!-- Header -->
+<header class="bg-white text-black shadow-lg">
+  <div class="container mx-auto flex items-center justify-between p-4">
+      <!-- Logo -->
+        {% if request.user.is_staff %}
+            <a href="{% url 'staff-home' %}" class="text-2xl font-bold">
+                SPARKY (Staff)
+            </a>
+        {% elif request.user.is_manager %}
+            <a href="{% url 'dashboard' %}" class="text-2xl font-bold">
+                SPARKY (Manager)
+            </a>
+        {% else %}
+            <a href="{% url 'member-home' %}" class="text-2xl font-bold">
+                SPARKY (Member)
+            </a>
+        {% endif %}
+
+      <!-- Navigation -->
+      <nav class="flex items-center space-x-4">
+          <span class="text-sm text-gray-700">{{request.user.title}}{{ request.user.first_name }} {{ request.user.last_name }}</span>
+          {% if request.user.profile.image %}
+            <img src="{{ request.user.profile.image.url}}" alt="" class="w-10 h-10 rounded-full object-cover">
+          {% else %}
+            <i class="fa-solid fa-user-circle text-gray-500 text-3xl"></i>
+          {% endif %}
+      </nav>
+  
+  </div>
+</header>
+    
+
+

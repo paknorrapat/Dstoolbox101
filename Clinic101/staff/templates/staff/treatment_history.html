@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% block main%}
+<!-- การรักษาวันนี้-->
+
+<div class="flex mb-3" >
+      <div class=" mr-3 bg-white p-4  rounded-2xl w-1/4 h-full mb-4  flex flex-col justify-between ">
+        <div class="ml-3 mt-1 mb-1">
+          <span class="text-blue-800">จำนวนการรักษาวันนี้</span>
+        </div>
+        <div class="flex-grow flex justify-center items-center mb-5">
+          <h1 class="text-center text-3xl font-bold"><span class="text-green-500">{{success_today}} </span>/ {{count_th_today}}</h1>
+        </div>
+      </div>
+      <div class=" bg-white p-4  rounded-2xl w-1/4 h-full mb-4 flex flex-col justify-between">
+        <div class="ml-3 mt-1 mb-1">
+          <span class="text-blue-800">จำนวนการรักษาทั้งหมด</span>
+        </div>
+        <div class="flex-grow flex justify-center items-center mb-5">
+          <h1 class="text-center text-3xl font-bold">{{count_th_all}}</h1>
+        </div>
+      </div>
+      <div class=" ml-3 bg-white p-8  rounded-2xl h-8 flex items-center justify-center">
+        <a href="{% url 't-history-all' %}">
+            <i class="fa-solid fa-right-long w-full text-2xl"></i>
+        </a> 
+      </div>
+</div>
+<div class="mr-3">
+  <div class=" bg-white p-4  rounded-2xl w-full mb-3">
+    <div class="ml-3 mt-1 mb-1">
+      <span class="text-blue-800">การรักษาวันนี้</span>
+    </div>
+    <table class="table ">
+      <!-- head -->
+      <thead>
+        <tr>
+          <th class="text-center">ชื่อ-นามสกุล</th>
+          <th class="text-center">รายการ</th>
+          <th class="text-center">เวลา</th>
+          <th class="text-center">ตัวเลือก</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for apt in appointment_page_obj %}
+        <!-- row 1 -->
+        <tr>
+          <td>
+            <div class="flex items-center gap-3">
+              <div class="avatar">
+                <div class="mask mask-squircle h-12 w-12">
+                  {% if apt.user.profile.image %}
+                    <img src="{{apt.user.profile.image.url}}" alt="รูปโปรไฟล์ของผู้ใช้">
+                  {% else %}
+                    <i class="fa-solid fa-user-circle text-gray-500 text-5xl "></i>
+                  {% endif %}
+                </div>
+              </div>
+              <div>
+                <div class="text-sm">{{apt.user.title}}{{apt.user.first_name}} {{apt.user.last_name}}</div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center">
+            {% if apt.detail %}
+            <div class="text-xs">{{apt.detail}} {{apt.treatment}}</div>
+            {% else %}
+            <div class="text-xs">{{apt.treatment}}</div>
+            {% endif %}
+            <div class="badge badge-ghost badge-sm">{{apt.dentist.dentistName}}</div>
+          </td>
+          <td>
+            <div class="text-xs text-center">{{apt.time_slot}}</div>
+          </td>
+          <th class="flex justify-center items-center mt-3.5">
+          
+              {% if apt.treatmenthistory.status %}
+              <i class="fa-solid fa-square-check text-xl mr-2 text-green-500"></i>
+              {% elif apt.status == 'สำเร็จ' %}
+              <a href="{% url 'add-treatmenthistory' apt.id %}" >
+                  <i class="fa-solid fa-square-plus text-xl mr-2 text-blue-500"></i>
+              </a>
+          
+              {% else %}
+              {% endif %}
+          </th>
+
+          
+        </tr>      
+      {% endfor %}
+      </tbody>
+      
+      
+    </table>
+    <div class="flex justify-center mt-4">
+      <nav class="btn-group">
+          {% if appointment_page_obj.has_previous %}
+          <a href="?appointment_page=1" class="btn btn-outline btn-sm">หน้าแรก</a>
+          <a href="?appointment_page={{ appointment_page_obj.previous_page_number }}" class="btn btn-outline btn-sm">ก่อนหน้า</a>
+          {% endif %}
+
+          <span class="btn btn-disabled btn-sm">หน้า {{ appointment_page_obj.number }} จาก {{ appointment_page_obj.paginator.num_pages }}</span>
+
+          {% if appointment_page_obj.has_next %}
+          <a href="?appointment_page={{ appointment_page_obj.next_page_number }}" class="btn btn-outline btn-sm">ถัดไป</a>
+          <a href="?appointment_page={{ appointment_page_obj.paginator.num_pages }}" class="btn btn-outline btn-sm">หน้าสุดท้าย</a>
+          {% endif %}
+      </nav>
+  </div>
+</div>
+
+<div class=" mr-3 bg-white p-4  rounded-2xl w-full mb-3">
+    <div class="flex ml-3 mt-1 mb-1">
+      <a href="{% url 't-history-all' %}" class="text-blue-800">การรักษาทั้งหมด</a>
+    
+    </div>
+    <table class="table ">
+      <!-- head -->
+      <thead>
+        <tr>
+          <th class="text-center">ชื่อ-นามสกุล</th>
+          <th class="text-center">รายการ</th>
+          <th class="text-center">วัน</th>
+          <th class="text-center">เวลา</th>
+          <th class="text-center">ตัวเลือก</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for apt in page_obj %}
+        <!-- row 1 -->
+        <tr>
+          <td>
+            <div class="flex items-center gap-3">
+              <div class="avatar">
+                <div class="mask mask-squircle h-12 w-12">
+                  {% if apt.user.profile.image %}
+                    <img src="{{apt.user.profile.image.url}}" alt="รูปโปรไฟล์ของผู้ใช้">
+                  {% else %}
+                    <i class="fa-solid fa-user-circle text-gray-500 text-5xl "></i>
+                  {% endif %}
+                </div>
+              </div>
+              <div>
+                <div class="text-sm">{{apt.user.title}}{{apt.user.first_name}} {{apt.user.last_name}}</div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center">
+            {% if apt.detail %}
+            <div class="text-xs">{{apt.detail}} {{apt.treatment}}</div>
+            {% else %}
+            <div class="text-xs">{{apt.treatment}}</div>
+            {% endif %}
+            <div class="badge badge-ghost badge-sm">{{apt.dentist.dentistName}}</div>
+          </td>
+          <td>
+            <div class="text-xs text-center">{{apt.date}}</div>
+          </td>
+          <td>
+            <div class="text-xs text-center">{{apt.time_slot}}</div>
+          </td>
+          <th class="flex justify-center items-center mt-3.5">
+              {% if apt.treatmenthistory.status %}
+              <i class="fa-solid fa-square-check text-xl mr-2 text-green-500"></i>
+              {% elif apt.status == 'สำเร็จ' %}
+              <a href="{% url 'add-treatmenthistory' apt.id %}">
+                  <i class="fa-solid fa-square-plus text-xl mr-2 text-blue-500"></i>
+              </a>
+          
+              {% else %}
+              {% endif %}
+          </th>
+
+          
+        </tr>      
+      {% endfor %}
+      </tbody>
+      
+      
+    </table>
+    <div class="flex justify-center mt-4">
+      <nav class="btn-group">
+          {% if page_obj.has_previous %}
+          <a href="?page=1" class="btn btn-outline btn-sm">หน้าแรก</a>
+          <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline btn-sm">ก่อนหน้า</a>
+          {% endif %}
+
+          <span class="btn btn-disabled btn-sm">หน้า {{ page_obj.number }} จาก {{ page_obj.paginator.num_pages }}</span>
+
+          {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline btn-sm">ถัดไป</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline btn-sm">หน้าสุดท้าย</a>
+          {% endif %}
+      </nav>
+    </div>
+</div>
+
+<script>
+</script>
+{% endblock%}

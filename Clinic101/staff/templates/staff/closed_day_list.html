@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block main %}
+<div class="bg-white rounded-2xl shadow-lg">
+    <div class=" bg-white p-4  rounded-2xl w-full mb-3">
+        <div class="flex ml-3 mt-1 mb-1">
+          <a href="{% url 'calendar' %}">
+            <i class="fa-solid fa-left-long w-full text-lg mr-3 mt-1"></i>
+          </a>   
+          <span class="text-lg text-blue-800">รายการวันปิดทำการ</span>
+        </div>
+        <table class="table ">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th class="text-center">วันปิดทำการ</th>
+              <th class="text-center">ชื่อทันตแพทย์</th>
+              <th class="text-center">ตัวเลือก</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for closed_day in page_obj %}
+            <!-- row 1 -->
+            <tr>
+              <td>
+                <div class="text-sm">{{closed_day.date}}</div>
+              </td>
+              <td class="text-center">
+                <div class="text-sm">{{closed_day.dentist.dentistName}}</div>
+              </td>
+              <th class="flex justify-center items-center mt-3.5">
+                <a href="#" onclick="openDeleteModal('{{ closed_day.id }}')" >
+                    <i class="fa-solid fa-trash text-xl mr-2 text-black-500"></i>
+                  </a>
+              </th>
+              
+            </tr>      
+          {% endfor %}
+          </tbody>
+          
+          
+        </table>
+        <div class="flex justify-center mt-4">
+          <nav class="btn-group">
+              {% if page_obj.has_previous %}
+              <a href="?page=1" class="btn btn-outline btn-sm">หน้าแรก</a>
+              <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline btn-sm">ก่อนหน้า</a>
+              {% endif %}
+      
+              <span class="btn btn-disabled btn-sm">หน้า {{ page_obj.number }} จาก {{ page_obj.paginator.num_pages }}</span>
+      
+              {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline btn-sm">ถัดไป</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline btn-sm">หน้าสุดท้าย</a>
+              {% endif %}
+          </nav>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="fixed inset-0 flex items-center justify-center z-50 hidden bg-gray-500 bg-opacity-50">
+        <div class="w-1/3 max-w-md">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-full">
+                <h3 class="text-xl mb-4 text-red-600">ยืนยันการลบวันปิดทำการ</h3>
+                <p class="text-gray-700 mb-6">คุณต้องการลบวันปิดทำการนี้หรือไม่?</p>
+                <form id="deleteForm" method="POST">
+                    {% csrf_token %}
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn bg-red-500 text-white hover:bg-red-600 mr-2">ลบ</button>
+                        <button type="button" class="btn btn-ghost" onclick="closeDeleteModal()">ยกเลิก</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+  /// ลบ
+  function openDeleteModal(closedDayId) {
+    document.getElementById('deleteModal').classList.remove('hidden');
+    document.getElementById('deleteForm').action = `/staff/delete_closed_day/${closedDayId}/`; 
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+  }
+</script>
+{% endblock %}

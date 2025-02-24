@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% block main %}
+<div class="mr-3">
+    <div class="bg-white p-4 rounded-2xl w-full mb-4 shadow-lg">
+        <!-- ส่วนหัว -->
+        <div class="flex items-center mb-4 ml-2 mt-1">
+            <h2 class="text-lg  text-blue-800">เพิ่มนัดหมาย</h2>
+        </div>
+
+        <!-- แสดงสถานะการจัดฟัน -->
+        <div class="flex">
+            <!-- ด้านซ้าย: สถานะการจัดฟัน -->
+            <div class="mr-10 w-full bg-gray-100 p-6 rounded-l-lg">
+                <h3 class="text-base text-blue-800 mb-4">สถานะการจัดฟัน</h3>
+                {% if step1_completed %}
+                    <div class="space-y-4">
+                        {% for dentist in dentist_names %}
+                        <p class="text-sm">ชื่อทันตแพทย์:{{ dentist }}</p>  <!-- แสดงชื่อทันตแพทย์ -->
+                        {% endfor %}
+                        <!-- ขั้นที่ 1: ปรึกษาวางแผน -->
+                        <div class="flex items-center gap-4">
+                            {% if step1_completed %}
+                            <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-lg">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <span class="text-base font-medium text-green-600">ขั้นที่ 1: ปรึกษาวางแผนจัดฟัน</span>
+                            {% else %}
+                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray text-lg">
+                                1
+                            </div>
+                            <span class="text-base font-medium text-gray-500">ขั้นที่ 1: ปรึกษาวางแผนจัดฟัน</span>
+                            {% endif %}
+                        </div>
+            
+                        <!-- ขั้นที่ 2: เคลียร์ช่องปาก -->
+                        <div class="flex items-center gap-4">
+                            {% if step2_completed %}
+                            <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-lg">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <span class="text-base font-medium text-green-600">ขั้นที่ 2: เคลียร์ช่องปาก</span>
+                            {% else %}
+                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray text-lg">
+                                2
+                            </div>
+                            <span class="text-base font-medium text-gray-500">ขั้นที่ 2: เคลียร์ช่องปาก</span>
+                            {% endif %}
+                
+                        </div>
+            
+                        <!-- ขั้นที่ 3: พิมพ์ปากและเอกซเรย์ -->
+                        <div class="flex items-center gap-4">
+                            {% if step3_completed %}
+                            <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-lg">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <span class="text-base font-medium text-green-600">ขั้นที่ 3: พิมพ์ปากและเอกซเรย์</span>
+                            {% else %}
+                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray text-lg">
+                                3
+                            </div>
+                            <span class="text-base font-medium text-gray-500">ขั้นที่ 3: พิมพ์ปากและเอกซเรย์</span>
+                            {% endif %}
+                        </div>
+            
+                        <!-- ขั้นที่ 4: ติดเครื่องมือ -->
+                        <div class="flex items-center gap-4">
+                            {% if step4_completed %}
+                            <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-lg">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <span class="text-base font-medium text-green-600">ขั้นที่ 4: ติดเครื่องมือ (ครบแล้ว: {{ step4_count }}/{{ step4_total }})</span>
+                            {% else %}
+                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray text-lg">
+                                4
+                            </div>
+                            <span class="text-base font-medium text-gray-500">ขั้นที่ 4: ติดเครื่องมือ ({{ step4_count }}/{{ step4_total }})</span>
+                            {% endif %}
+                        </div>
+            
+                        <!-- ขั้นที่ 5: ถอดเครื่องมือ -->
+                        <div class="flex items-center gap-4">
+                            {% if step5_completed %}
+                            <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-lg">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <span class="text-base font-medium text-green-600">ขั้นที่ 5: ถอดเครื่องมือ</span>
+                            {% else %}
+                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray text-lg">
+                                5
+                            </div>
+                            <span class="text-base font-medium text-gray-500">ขั้นที่ 5: ถอดเครื่องมือ</span>
+                            {% endif %}
+                            
+                        </div>
+                    </div>
+                {% else %}
+                 <span class="text-gray-500 ">ไม่มีข้อมูลการจัดฟัน</span>
+                {% endif%}
+                   
+            </div>
+
+            <!-- ด้านขวา: ฟอร์มนัดหมาย -->
+            <div class="w-full p-6">
+                <h3 class="text-base  text-blue-800 mb-4">นัดหมาย</h3>
+                <form id="addForm" method="POST">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        <div>
+                            <label for="user" class="block text-sm font-medium text-gray-700">ชื่อคนไข้</label>
+                            <input type="text" id="userName" name="userName"  readonly value="{{user.title}}{{user.first_name}} {{user.last_name}}" class="input input-bordered w-full">
+                            <input type="hidden" id="user" name="user" value="{{user.id}}">
+                        </div>
+                        <div>
+                            <label for="dentist" class="block text-sm font-medium text-gray-700">ชื่อทันตแพทย์</label>
+                            <select id="dentist" name="dentist" required class="select select-bordered w-full">
+                                <option value="" disabled selected>เลือกทันตแพทย์</option>
+                                {% for dentist in dentists %}
+                                    <option value="{{ dentist.id }}">{{ dentist.dentistName }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="treatment" class="block text-sm font-medium text-gray-700">รายการนัดหมาย</label>
+                            <select id="treatment" name="treatment" required class="select select-bordered w-full">
+                                <option value="" disabled selected>เลือกรายการ</option>
+                                {% for treatment in treatments %}
+                                    <option value="{{ treatment.id }}">{{ treatment.treatmentName }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="date" class="block text-sm font-medium text-gray-700">วันที่นัดหมาย</label>
+                            <input type="date" id="date" name="date" class="input input-bordered w-full">
+                        </div>
+                        <div>
+                            <label for="time_slot" class="block text-sm font-medium text-gray-700">เวลา</label>
+                            <select id="time_slot" name="time_slot" class="select select-bordered w-full">
+                                <option value="">เลือกเวลา</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <button type="submit" class="btn bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400">+ เพิ่มนัดหมาย</button>
+                            <a type="button" class="btn bg-gray-200 text-black px-4 py-2 rounded hover:bg-red-500 hover:text-white" href="{% url 'staff-home' %}">ยกเลิก</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+    </div>
+</div>
+<script>
+    // ปรับค่า min ของวันที่ให้ไม่สามารถเลือกวันย้อนหลังได้
+    document.addEventListener('DOMContentLoaded', function() {
+        var today = new Date().toISOString().split('T')[0];  // รับวันที่ปัจจุบัน
+        document.getElementById('date').setAttribute('min', today);  // กำหนด min ให้เป็นวันที่ปัจจุบัน
+    });
+    
+    ///วันเวลา///
+    function updateTimeSlots() {
+        var selectedPatient = document.getElementById('user').value;
+        var selectedDate = document.getElementById('date').value;
+        var selectedDentist = document.getElementById('dentist').value;
+        var timeSlotSelect = document.getElementById('time_slot');
+
+        // ล้าง Time Slot เก่า
+        timeSlotSelect.innerHTML = '<option value="">เลือกเวลา</option>';
+
+        // ตรวจสอบว่ามีการเลือกทั้งวันที่และทันตแพทย์
+        if (selectedDate && selectedDentist) {
+            // ดึงข้อมูล Slot เวลาจาก Server โดยใช้ Ajax
+            fetch(`/member/get-time-slots/?date=${selectedDate}&dentist_id=${selectedDentist}&user_id=${selectedPatient}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.slots && data.slots.length > 0) {
+                        data.slots.forEach(function(slot) {
+                            var option = document.createElement('option');
+                            option.value = slot;
+                            option.textContent = slot;
+                            timeSlotSelect.appendChild(option);
+                        });
+                    } else {
+                        console.log("No slots available.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching time slots:', error);
+                });
+        }
+    }
+
+    // เชื่อม Event กับ Date และ Dentist Dropdown
+    document.getElementById('date').addEventListener('change', updateTimeSlots);
+    document.getElementById('dentist').addEventListener('change', updateTimeSlots);
+
+
+</script>
+
+{% endblock %}

@@ -1,9 +1,0 @@
-Django
-django-tailwind
-django-browser-reload
-Pillow
-gradio
-pandas
-numpy
-matplotlib
-seaborn

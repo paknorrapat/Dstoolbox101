@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="flex mb-3">
+    <!-- ปุ่มที่นำไปสู่แดชบอร์ด -->
+    <div class=" ml-3 bg-white p-4 rounded-2xl w-1/4 h-full mb-4 flex flex-col justify-between">
+        <div class="ml-3 mt-1 mb-1">
+            <span class="text-blue-800">ข้อมูล Dashboard</span>
+        </div>
+        <div class="flex-grow flex justify-center items-center mb-5">
+            <h1>{{ success_or_fail_today }} / {{ count_appointment_today }}</h1>
+        </div>
+    </div>
+</div>
+
+<div class="flex mb-3">
+    <div class="mr-3 w-1/2">
+        <div class="bg-white p-4 rounded-2xl w-full h-full">
+            <div class="ml-3 mt-1 mb-1">
+                <span class="text-lg text-blue-800">นัดหมายวันนี้</span>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center">ชื่อ-นามสกุล</th>
+                        <th class="text-center">รายการ</th>
+                        <th class="text-center">เวลา</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for apt in appointment_page_obj %}
+                    <tr>
+                        <td>{{ apt.user.first_name }} {{ apt.user.last_name }}</td>
+                        <td>{{ apt.treatment }}</td>
+                        <td>{{ apt.time_slot }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

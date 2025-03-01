@@ -1,5 +1,11 @@
 {
   "dependencies": {
-    "daisyui": "^4.12.23"
+    "autoprefixer": "^10.4.20",
+    "daisyui": "^4.12.24",
+    "postcss": "^8.5.3",
+    "postcss-import": "^16.1.0",
+    "postcss-nested": "^7.0.2",
+    "postcss-simple-vars": "^7.0.1",
+    "tailwindcss": "^3.4.3"
   }
 }

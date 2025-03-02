@@ -5,7 +5,7 @@ cd Clinic101
 pip install -r requirements.txt 
 python manage.py makemigrations
 python manage.py migrate
-เปิดใช้งาน tailwind
+
 npm i -D daisyui@latest
 
 เวลารัน เปิด 3  terminal

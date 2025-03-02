@@ -13,7 +13,6 @@ urlpatterns = [
 
     path('select-appointment-date/<int:appointment_id>/',select_appointment_date, name='select-appointment-date'),
     path('t_history/<int:user_id>/',t_history,name="t-history"),
-    path('braces_progress/<int:user_id>/',braces_progress,name="braces-progress"),
 
     path('appointment_all/',appointment_all,name="appointment-all"),
 ]

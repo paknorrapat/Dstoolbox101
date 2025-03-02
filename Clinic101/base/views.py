@@ -24,9 +24,8 @@ def showprofile(request, user_id):
 
     # ตรวจสอบว่าเป็นเจ้าของข้อมูล, staff
     if request.user.id != user_id and not request.user.is_staff:
-        return HttpResponseForbidden("คุณไม่มีสิทธิ์เข้าถึงโปรไฟล์นี้")
+        return HttpResponseForbidden("คุณไม่มีสิทธิ์เข้าถึงโปรไฟล์นี้") 
     
-
     age = calculate_age(user.profile.birthDate)  # คำนวณอายุ
     
     

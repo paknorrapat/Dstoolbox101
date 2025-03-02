@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "autoprefixer": "^10.4.20",
-    "daisyui": "^4.12.24",
     "postcss": "^8.5.3",
     "postcss-import": "^16.1.0",
     "postcss-nested": "^7.0.2",
@@ -10,6 +9,7 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "cross-spawn": "^7.0.6"
+    "cross-spawn": "^7.0.6",
+    "daisyui": "^5.0.0"
   }
 }

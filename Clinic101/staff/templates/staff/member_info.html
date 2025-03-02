@@ -26,7 +26,6 @@
               <th class="text-center">ชื่อผู้ใช้งาน</th>
               <th class="text-center">ข้อมูลส่วนตัว</th>
               <th class="text-center">ประวัติการรักษา</th>
-              <th class="text-center">สถานะการจัดฟัน</th>
             </tr>
           </thead>
           <tbody>
@@ -61,11 +60,6 @@
               <th class="text-center">
                 <a href="{% url 't-history' user.id %}" >
                   <i class="fa-solid fa-file-medical text-xl"></i>
-                </a>
-              </th>
-              <th class="text-center">
-                <a href="{% url 'braces-progress' user.id%}">
-                  <i class="fa-solid fa-teeth-open text-xl"></i>
                 </a>
               </th>
             </tr>

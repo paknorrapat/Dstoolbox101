@@ -20,7 +20,7 @@ class User(AbstractUser):
     title = models.CharField(max_length=30,verbose_name="คำนำหน้าชื่อ")
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='profile',blank=True, null=True)
     idCard = models.CharField(max_length=13,verbose_name='เลขประจำตัวประชาชน',blank=True, null=True,unique=True)
     phone = models.CharField(max_length=10,verbose_name='เบอร์โทรศัพท์มือถือ',blank=True, null=True)
     address = models.TextField(max_length=500,verbose_name='ที่อยู่',blank=True, null=True)

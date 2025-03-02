@@ -95,72 +95,7 @@ def t_history(request,user_id):
     page_obj = paginator.get_page(page_number)
     return render(request,"member/t_history.html",{'page_obj':page_obj})
 
-@login_required(login_url='login')
-def braces_progress(request,user_id):
-    treatment_history = TreatmentHistory.objects.filter(appointment__user = user_id).order_by('-appointment__date')
-    braces = treatment_history.filter(appointment__treatment__is_braces=True)
 
-     # ตรวจสอบว่าเป็นเจ้าของข้อมูล, staff
-    if request.user.id != user_id and not request.user.is_staff:
-        return HttpResponseForbidden("คุณไม่มีสิทธิ์เข้าถึงสถานะการจัดฟันนี้")
-    
-     # pagination
-    paginator = Paginator(braces,10) # แบ่งเป็นหน้า 10 รายการต่อหน้า
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    # คำนวณค่าใช้จ่ายทั้งหมดสำหรับการจัดฟัน
-    total_cost = treatment_history.filter(appointment__treatment__is_braces=True).aggregate(total=Sum('cost'))['total'] or 0
-
-    # ค่าใช้จ่ายของ "เคลียร์ช่องปาก"
-    clear_cost = treatment_history.filter(
-        appointment__treatment__treatmentName='เคลียร์ช่องปาก'
-    ).aggregate(total=Sum('cost'))['total'] or 0
-
-    max_cost = 40000 + clear_cost # ค่าใช้จ่ายรวมทั้งหมด
-    percentage_paid = min((total_cost / max_cost) * 100, 100)  # จำกัดไม่เกิน 100%
-
-    # ตรวจสอบสถานะของ "ปรึกษาวางแผนจัดฟัน"
-    step1_completed = treatment_history.filter(
-        appointment__treatment__treatmentName='ปรึกษาวางแผนจัดฟัน', status=True
-    ).exists()
-
-    # ตรวจสอบสถานะของ "เคลียร์ช่องปาก"
-    step2_completed = treatment_history.filter(
-        appointment__treatment__treatmentName='เคลียร์ช่องปาก', status=True
-    ).exists()
-
-    # ตรวจสอบสถานะของ "พิมพ์ปากและเอกซเรย์"
-    step3_completed = treatment_history.filter(
-        appointment__treatment__treatmentName='พิมพ์ปากและเอกซเรย์', status=True
-    ).exists()
-
-    # ตรวจสอบสถานะของ "ติดเครื่องมือ"
-    step4_total = 30  # จำนวนครั้งที่ต้องการ
-    step4_count = treatment_history.filter(
-        appointment__treatment__treatmentName='ติดเครื่องมือ', status=True
-    ).count()
-    step4_completed = step4_count >= step4_total
-
-    # ตรวจสอบสถานะของ "ถอดเครื่องมือ"
-    step5_completed = treatment_history.filter(
-        appointment__treatment__treatmentName='ถอดเครื่องมือ', status=True
-    ).exists()
-
-    
-    return render(request,"member/braces_progress.html",{"treatment_history": treatment_history,
-                                                         "step1_completed": step1_completed,
-                                                         "step2_completed": step2_completed,
-                                                         "step3_completed": step3_completed,
-                                                         "step4_completed": step4_completed,
-                                                         "step4_count": step4_count,
-                                                         "step4_total": step4_total,
-                                                         "step5_completed": step5_completed,
-                                                         "total_cost":total_cost,
-                                                         "braces":braces,
-                                                         'page_obj':page_obj,
-                                                         "percentage_paid": round(percentage_paid, 2),
-                                                         "max_cost": max_cost,
-                                                         })
 
 @user_passes_test(is_member, login_url='login')
 def appointment_view(request,dentist_id):

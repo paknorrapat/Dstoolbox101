@@ -4,15 +4,15 @@
       <!-- Logo -->
         {% if request.user.is_staff %}
             <a href="{% url 'staff-home' %}" class="text-2xl font-bold">
-                SPARKY (Staff)
+                Clinic101 (Staff)
             </a>
         {% elif request.user.is_manager %}
             <a href="{% url 'dashboard' %}" class="text-2xl font-bold">
-                SPARKY (Manager)
+                Clinic101 (Manager)
             </a>
         {% else %}
             <a href="{% url 'member-home' %}" class="text-2xl font-bold">
-                SPARKY (Member)
+                Clinic101 (Member)
             </a>
         {% endif %}
 

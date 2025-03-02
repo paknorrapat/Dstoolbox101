@@ -160,11 +160,9 @@ def plot_appointments_by_status(data):
 
     # แปลงสถานะเป็นภาษาไทยที่สวยงาม
     status_mapping = {
-        'completed': 'เสร็จสิ้น',
-        'pending': 'รอดำเนินการ',
-        'cancelled': 'ยกเลิก',
-        'no_show': 'ไม่มาตามนัด',
-        'rescheduled': 'เลื่อนนัด'
+        'สำเร็จ': 'สำเร็จ',
+        'ไม่สำเร็จ': 'ไม่สำเร็จ',
+        'รอดำเนินการ': 'รอดำเนินการ',
     }
     
     labels = [status_mapping.get(s['status'], s['status']) for s in data]
@@ -252,47 +250,91 @@ def plot_revenue_by_treatment(data):
     return fig
 
 def plot_top_dentists(data):
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 6), dpi=120)
     fig.patch.set_facecolor(THEME_COLORS['background'])
 
     if not data:
-        ax.text(0.5, 0.5, "ไม่มีข้อมูล", fontsize=14, ha="center", va="center")
-        ax.set_title("ทันตแพทย์ที่มีการนัดหมายมากที่สุด")
+        ax.text(0.5, 0.5, "ไม่มีข้อมูล", fontsize=14, ha="center", va="center", color=THEME_COLORS['text'])
+        ax.set_title("ทันตแพทย์ที่มีการนัดหมายมากที่สุด", color=THEME_COLORS['text'])
         return fig
         
     # จำกัดจำนวนการแสดงผลไม่เกิน 10 รายการ
     if len(data) > 10:
         data = data[:10]
-
-    labels = [d['dentist__dentistName'] for d in data]
-    values = [d['total'] for d in data]
+    
+    # เรียงลำดับข้อมูลจากมากไปน้อยเพื่อการแสดงผลที่ดีกว่า
+    sorted_data = sorted(data, key=lambda x: x['total'], reverse=True)
+    
+    labels = [d['dentist__dentistName'] for d in sorted_data]
+    values = [d['total'] for d in sorted_data]
     
     # คำนวณร้อยละ
     total = sum(values)
     percentages = [v/total*100 for v in values]
 
-    # สร้างกราดิเอนท์สีจากอ่อนไปเข้ม
-    cm = plt.cm.get_cmap('PuBu')
-    colors = [cm(1. * i / len(labels)) for i in range(len(labels))]
+    # สร้างชุดสีไล่ระดับ - ใช้ชุดสีแบบใหม่ที่ดูทันสมัยและสบายตา
+    colors = plt.colormaps['Blues'](np.linspace(0.6, 0.9, len(labels)))
     
-    # สร้างกราฟแท่งนอน
-    bars = ax.barh(labels, values, color=colors, height=0.6)
+    # เปลี่ยนเป็นกราฟแท่งนอน ทำให้อ่านง่ายกว่ากรณีมีชื่อยาว
+    bars = ax.barh(
+        np.arange(len(labels)), 
+        values, 
+        color=colors,
+        height=0.7,
+        edgecolor='white',
+        linewidth=1.5,
+        zorder=3
+    )
     
-    # เพิ่มค่าตัวเลขด้านขวาของแท่ง
+    # เพิ่มค่าตัวเลขและเปอร์เซ็นต์ด้านขวาของแท่ง
     for i, bar in enumerate(bars):
         width = bar.get_width()
-        ax.text(width + 0.3, 
-                bar.get_y() + bar.get_height()/2, 
-                f'{int(width)} ({percentages[i]:.1f}%)',
-                ha='left', va='center', fontweight='bold')
+        ax.text(
+            width + max(values) * 0.02, 
+            bar.get_y() + bar.get_height()/2, 
+            f'{int(width)} ({percentages[i]:.1f}%)',
+            ha='left', 
+            va='center', 
+            fontweight='bold',
+            color=THEME_COLORS['text'],
+            fontsize=10
+        )
 
-    ax.set_xlabel("จำนวนการนัดหมาย", labelpad=10)
-    ax.set_ylabel("ทันตแพทย์", labelpad=10)
-    ax.set_title("ทันตแพทย์ที่มีการนัดหมายมากที่สุด", pad=15)
-    ax.grid(axis='x', linestyle='--', alpha=0.6)
+    # ปรับแต่งแกน y - ชื่อทันตแพทย์
+    ax.set_yticks(np.arange(len(labels)))
+    ax.set_yticklabels(labels)
+    
+    # ตั้งค่าการแสดงผลแกน
+    ax.set_xlabel("จำนวนการนัดหมาย", labelpad=10, fontweight='medium', color=THEME_COLORS['neutral'])
+    # ซ่อนชื่อแกน y เนื่องจากเห็นได้ชัดว่าเป็นชื่อทันตแพทย์อยู่แล้ว
+    ax.set_ylabel("", labelpad=10)
+    ax.set_title("ทันตแพทย์ที่มีการนัดหมายมากที่สุด", pad=15, fontsize=16, fontweight='bold', color=THEME_COLORS['text'])
+    
+    # ปรับแต่งเส้นกริดให้สวยงาม
+    ax.grid(axis='x', linestyle=':', alpha=0.4, color='#E2E8F0', zorder=0)
+    
+    # ปรับแต่งสีแกน
+    ax.tick_params(axis='x', colors=THEME_COLORS['neutral'])
+    ax.tick_params(axis='y', colors=THEME_COLORS['text'], labelsize=11)
+    
+    # ซ่อนเส้นขอบด้านบนและด้านขวา
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
-    fig.tight_layout()
+    ax.spines['left'].set_color('#E2E8F0')
+    ax.spines['bottom'].set_color('#E2E8F0')
+    
+    # ปรับขอบกราฟ
+    fig.tight_layout(pad=3.0)
+    
+    # เพิ่มหมายเหตุรวมจำนวนการนัดหมายทั้งหมด
+    plt.annotate(
+        f'จำนวนการนัดหมายทั้งหมด: {total:,}',
+        xy=(0.02, 0.02),
+        xycoords='figure fraction',
+        fontsize=10,
+        color=THEME_COLORS['neutral'],
+        bbox=dict(boxstyle="round,pad=0.5", alpha=0.7)
+    )
     
     return fig
 

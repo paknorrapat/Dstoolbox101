@@ -7,8 +7,9 @@ python manage.py makemigrations
 python manage.py migrate
 
 npm i -D daisyui@latest
-
+ถ้าโหลดdata ไม่ได้ pip install pyyaml
 python manage.py loaddata data.yaml
+
 
 เวลารัน เปิด 3  terminal
 1   python manage.py tailwind start 
